@@ -2103,8 +2103,13 @@ namespace PetaPoco
 					}
 					else if (!dstType.IsAssignableFrom(srcType))
 					{
-						converter = delegate(object src) { return Convert.ChangeType(src, dstType, null); };
-					}
+						converter = delegate(object src)
+									{
+										Type safeType = Nullable.GetUnderlyingType(dstType)
+													?? dstType;
+										return (src == null) ? null: Convert.ChangeType(src, safeType);
+									};
+						}
 				}
 				return converter;
 			}
